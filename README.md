@@ -85,6 +85,7 @@ Secondary vector-only or BM25-only retrieval ensures uptime if primary pipeline 
 Each stage is independent for testing, scaling, or swapping models.
 
 ## 🧱 Project Structure
+```
 RAG/
 │
 ├── main.py                # Entry point
@@ -98,34 +99,51 @@ RAG/
 │
 ├── qdrant_storage/        # Local vector DB (ignored in git)
 └── README.md
-
+```
 ## ⚙️ Retrieval Pipeline
 
 Query rewritten for clarity
+
 Hybrid retrieval generates candidates
+
 Results merged and deduplicated
+
 Neural reranker scores relevance
+
 Multi-hop expansion retrieves missing context
+
 Final context passed to LLM
 
 ## 📊 Evaluation (Planned)
 
 Designed for benchmarking with:
+
 Recall@K
+
 MRR (Mean Reciprocal Rank)
+
 Answer Faithfulness
+
 Context Precision
+
 Evaluation module intentionally separated to allow dataset-agnostic testing.
 
 ## 🛠️ Tech Stack
 
 Python 3.11
+
 FastAPI + Inngest for event-driven workflow
+
 Qdrant vector DB
+
 BM25 sparse search
+
 Cross-encoder reranker
+
 OpenAI embeddings & GPT-5 nano
+
 Streamlit UI for PDF upload and query
+
 Modular RAG architecture
 
 ## ▶️ Quick Start
@@ -148,16 +166,24 @@ streamlit run streamlit_app.py
 ```
 
 ## 📈 Engineering Highlights
+
 Production-style retrieval orchestration
+
 Separation of retrieval vs reasoning layers
+
 Failure-resilient pipeline design
+
 Research-friendly experimentation structure
+
 Scalable to distributed vector databases
 
 ## 🧩 Future Work
 Retrieval evaluation dashboard
+
 Adaptive chunking
+
 Agentic retrieval planning
+
 Domain-specific fine-tuned reranker
 
 ## 👤 Author
