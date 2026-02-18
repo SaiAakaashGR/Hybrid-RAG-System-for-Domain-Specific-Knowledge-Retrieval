@@ -1,5 +1,5 @@
 # Hybrid-RAG-System-for-Domain-Specific-Knowledge-Retrieval
-Production-grade Retrieval-Augmented Generation with Hybrid Search, Reranking, Query Rewriting &amp; Multi-Hop Retrieval
+Production-grade Retrieval-Augmented Generation with Hybrid Search, Reranking, Query Rewriting & Multi-Hop Retrieval
 
 ## 🚀 Overview
 
@@ -15,15 +15,14 @@ This project implements a full RAG pipeline for domain-specific PDFs and documen
 9. Evaluation-ready architecture – designed to measure retrieval and answer accuracy.
 
 ## 🎯 Why This Project Matters
-
-Most RAG implementations fail because:
-Vector similarity alone misses keyword-critical matches
-Retrieved chunks are poorly ranked
-Complex queries require reasoning across documents
-Systems collapse when embedding search fails
-
-This project solves those limitations using a layered retrieval architecture.
-
+Most RAG implementations fail because:  
+Vector similarity alone misses keyword-critical matches  
+Retrieved chunks are poorly ranked  
+Complex queries require reasoning across documents  
+Systems collapse when embedding search fails  
+  
+This project solves those limitations using a layered retrieval architecture.  
+  
 ## 🧠 System Architecture
 ```
             User Query
@@ -59,33 +58,33 @@ This project solves those limitations using a layered retrieval architecture.
 ```
 ## ✨ Key Features
 ✅ PDF Ingestion
-Upload PDFs via Streamlit or API.
-Automatic chunking into 1k-token overlapping segments.
-Assigns unique source_id for each document.
+Upload PDFs via Streamlit or API.  
+Automatic chunking into 1k-token overlapping segments.  
+Assigns unique source_id for each document.  
+   
+✅ Vector Embeddings & Storage  
+Uses OpenAI text embeddings (text-embedding-3-small).  
+Efficient storage in Qdrant for semantic search.  
 
-✅ Vector Embeddings & Storage
-Uses OpenAI text embeddings (text-embedding-3-small).
-Efficient storage in Qdrant for semantic search.
-
-✅ Hybrid Retrieval
-Combines BM25 lexical search with vector similarity.
-Improves precision & recall across varied queries.
-
-✅ Neural Reranking
-Cross-encoder selects the most relevant chunks from candidate pool.
-
-✅ Automatic Query Rewriting
-Reformulates vague or underspecified questions for better retrieval.
-
-✅ Multi-Hop Retrieval
-Iteratively fetches additional chunks when more evidence is needed.
-
-✅ Graceful Degradation
-Secondary vector-only or BM25-only retrieval ensures uptime if primary pipeline fails.
-
-✅ Modular, Production-Ready
-Each stage is independent for testing, scaling, or swapping models.
-
+✅ Hybrid Retrieval  
+Combines BM25 lexical search with vector similarity.  
+Improves precision & recall across varied queries.  
+  
+✅ Neural Reranking  
+Cross-encoder selects the most relevant chunks from candidate pool.  
+  
+✅ Automatic Query Rewriting  
+Reformulates vague or underspecified questions for better retrieval.  
+  
+✅ Multi-Hop Retrieval  
+Iteratively fetches additional chunks when more evidence is needed.  
+  
+✅ Graceful Degradation  
+Secondary vector-only or BM25-only retrieval ensures uptime if primary pipeline fails.  
+  
+✅ Modular, Production-Ready  
+Each stage is independent for testing, scaling, or swapping models.  
+  
 ## 🧱 Project Structure
 ```
 RAG/
@@ -103,50 +102,31 @@ RAG/
 └── README.md
 ```
 ## ⚙️ Retrieval Pipeline
-
-Query rewritten for clarity
-
-Hybrid retrieval generates candidates
-
-Results merged and deduplicated
-
-Neural reranker scores relevance
-
-Multi-hop expansion retrieves missing context
-
-Final context passed to LLM
+Query rewritten for clarity  
+Hybrid retrieval generates candidates  
+Results merged and deduplicated  
+Neural reranker scores relevance  
+Multi-hop expansion retrieves missing context  
+Final context passed to LLM  
 
 ## 📊 Evaluation (Planned)
 
-Designed for benchmarking with:
-
-Recall@K
-
-MRR (Mean Reciprocal Rank)
-
-Answer Faithfulness
-
-Context Precision
-
-Evaluation module intentionally separated to allow dataset-agnostic testing.
+Designed for benchmarking with:  
+Recall@K  
+MRR (Mean Reciprocal Rank)  
+Answer Faithfulness  
+Context Precision  
+Evaluation module intentionally separated to allow dataset-agnostic testing.  
 
 ## 🛠️ Tech Stack
-
-Python 3.11
-
-FastAPI + Inngest for event-driven workflow
-
-Qdrant vector DB
-
-BM25 sparse search
-
-Cross-encoder reranker
-
-OpenAI embeddings & GPT-5 nano
-
-Streamlit UI for PDF upload and query
-
-Modular RAG architecture
+Python 3.11  
+FastAPI + Inngest for event-driven workflow  
+Qdrant vector DB  
+BM25 sparse search  
+Cross-encoder reranker  
+OpenAI embeddings & GPT-5 nano  
+Streamlit UI for PDF upload and query  
+Modular RAG architecture  
 
 ## ▶️ Quick Start
 ```bash
@@ -168,25 +148,17 @@ streamlit run streamlit_app.py
 ```
 
 ## 📈 Engineering Highlights
-
-Production-style retrieval orchestration
-
-Separation of retrieval vs reasoning layers
-
-Failure-resilient pipeline design
-
-Research-friendly experimentation structure
-
-Scalable to distributed vector databases
+Production-style retrieval orchestration  
+Separation of retrieval vs reasoning layers  
+Failure-resilient pipeline design  
+Research-friendly experimentation structure  
+Scalable to distributed vector databases  
 
 ## 🧩 Future Work
-Retrieval evaluation dashboard
-
-Adaptive chunking
-
-Agentic retrieval planning
-
-Domain-specific fine-tuned reranker
+Retrieval evaluation dashboard  
+Adaptive chunking  
+Agentic retrieval planning  
+Domain-specific fine-tuned reranker  
 
 ## 👤 Author
 AI Engineer focused on information retrieval, document intelligence, and applied LLM systems.
