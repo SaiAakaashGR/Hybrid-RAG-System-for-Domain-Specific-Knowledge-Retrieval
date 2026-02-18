@@ -25,12 +25,13 @@ Systems collapse when embedding search fails
 This project solves those limitations using a layered retrieval architecture.
 
 ## 🧠 System Architecture
-User Query
-     │
-     ▼
-Query Rewriter (LLM)
-     │
-     ▼
+```
+            User Query
+                │
+                ▼
+            Query Rewriter (LLM)
+                │
+                ▼
 ──────── Hybrid Retrieval ────────
 │                                  │
 │   BM25 Sparse Search             │
@@ -55,6 +56,7 @@ Query Rewriter (LLM)
                │
                ▼
             LLM Answer
+```
 ## ✨ Key Features
 ✅ PDF Ingestion
 Upload PDFs via Streamlit or API.
