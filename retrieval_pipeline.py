@@ -1,5 +1,5 @@
 import logging
-from dataloader import embed_texts
+from data_loader import embed_texts
 from vector_db import QdrantStorage
 from reranker import Reranker
 from bm25_index import BM25Index

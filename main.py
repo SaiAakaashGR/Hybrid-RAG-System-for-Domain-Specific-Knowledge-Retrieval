@@ -36,7 +36,7 @@ inngest_client = inngest.Inngest(
     fn_id="RAG: Ingest PDF",
     trigger=inngest.TriggerEvent(event="rag/ingest_pdf"),
     throttle=inngest.Throttle(
-        count=2, period=datetime.timedelta(minutes=1)
+        limit=2, period=datetime.timedelta(minutes=1)
     ),
     rate_limit=inngest.RateLimit(
         limit=1,
@@ -69,27 +69,71 @@ async def rag_ingest_pdf(ctx: inngest.Context):
     fn_id="RAG: Query PDF",
     trigger=inngest.TriggerEvent(event="rag/query_pdf_ai")
 )
+# async def rag_query_pdf_ai(ctx: inngest.Context):
+#     def _search(question: str, top_k: int = 5) -> RAGSearchResult:
+
+#         pipeline = RetrievalPipeline()
+
+#         contexts, sources, mode = pipeline.retrieve(
+#             question,
+#             top_k
+#         )
+
+#         logging.info(f"Retrieval mode used: {mode}")
+
+#         return RAGSearchResult(
+#             contexts=contexts,
+#             sources=sources
+#         )
+
+
+#     question = ctx.event.data["question"]
+#     top_k = int(ctx.event.data.get("top_k", 5))
+#     #found=await ctx.step.run("embed-and-search", lambda: _search(question, top_k), output_type=RAGSearchResult)
+
+#     engine = QueryEngine()
+
+#     contexts, sources = await engine.retrieve_contexts(
+#         ctx,
+#         question,
+#         top_k
+#     )
+
+#     context_block = "\n\n".join(f"- {c}" for c in contexts)
+
+
+#     context_block = "\n\n".join(f"- {c}" for c in found.contexts)
+#     user_content = (
+#         "Use the following context to answer the question.\n\n"
+#         f"Context:\n{context_block}\n\n"
+#         f"Question: {question}\n"
+#         "Answer concisely using the context above"
+#     )
+#     adapter = ai.openai.Adapter(
+#         auth_key=os.getenv("OPENAI_API_KEY"),
+#         model="gpt-5-nano"
+#     )
+
+#     res = await ctx.step.ai.infer(
+#         "llm-answer",
+#         adapter=adapter,
+#         body={
+#             "max_completion_tokens": 1024,
+#             "messages": [
+#                 {"role": "system", "content": "You answer questions using only the provided context"},
+#                 {"role": "user", "content": user_content},
+                
+#             ]
+#         }
+#     )
+
+#     answer = res["choices"][0]["message"]["content"].strip()
+#     return {"answer": answer, "sources":found.sources, "num_contexts": len(found.contexts)}
+
 async def rag_query_pdf_ai(ctx: inngest.Context):
-    def _search(question: str, top_k: int = 5) -> RAGSearchResult:
-
-        pipeline = RetrievalPipeline()
-
-        contexts, sources, mode = pipeline.retrieve(
-            question,
-            top_k
-        )
-
-        logging.info(f"Retrieval mode used: {mode}")
-
-        return RAGSearchResult(
-            contexts=contexts,
-            sources=sources
-        )
-
 
     question = ctx.event.data["question"]
     top_k = int(ctx.event.data.get("top_k", 5))
-    #found=await ctx.step.run("embed-and-search", lambda: _search(question, top_k), output_type=RAGSearchResult)
 
     engine = QueryEngine()
 
@@ -99,16 +143,17 @@ async def rag_query_pdf_ai(ctx: inngest.Context):
         top_k
     )
 
+    logging.info(f"Retrieved {len(contexts)} contexts")
+
     context_block = "\n\n".join(f"- {c}" for c in contexts)
 
-
-    context_block = "\n\n".join(f"- {c}" for c in found.contexts)
     user_content = (
         "Use the following context to answer the question.\n\n"
         f"Context:\n{context_block}\n\n"
         f"Question: {question}\n"
         "Answer concisely using the context above"
     )
+
     adapter = ai.openai.Adapter(
         auth_key=os.getenv("OPENAI_API_KEY"),
         model="gpt-5-nano"
@@ -120,15 +165,23 @@ async def rag_query_pdf_ai(ctx: inngest.Context):
         body={
             "max_completion_tokens": 1024,
             "messages": [
-                {"role": "system", "content": "You answer questions using only the provided context"},
+                {
+                    "role": "system",
+                    "content": "You answer questions using only the provided context"
+                },
                 {"role": "user", "content": user_content},
-                
             ]
         }
     )
 
     answer = res["choices"][0]["message"]["content"].strip()
-    return {"answer": answer, "sources":found.sources, "num_contexts": len(found.contexts)}
+
+    return {
+        "answer": answer,
+        "sources": sources,
+        "num_contexts": len(contexts)
+    }
+
 
 app = FastAPI()
 

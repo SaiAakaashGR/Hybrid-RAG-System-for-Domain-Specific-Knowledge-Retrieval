@@ -12,6 +12,8 @@ dependencies = [
     "openai>=2.15.0",
     "python-dotenv>=1.2.1",
     "qdrant-client==1.6.0",
+    "rank-bm25>=0.2.2",
+    "sentence-transformers>=5.2.3",
     "streamlit>=1.53.0",
     "uvicorn>=0.40.0",
 ]
