@@ -1,6 +1,6 @@
 from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance, PointStruct
-
+import hashlib
 
 class QdrantStorage: 
     # def __init__(self, url="http://localhost:6333", collection="docs", dim=1536):

@@ -53,11 +53,12 @@ async def rag_ingest_pdf(ctx: inngest.Context):
 
         #skip re-ingestion if already exists
         if store.collection_exists():
-            logging.info("Document already indexed — skipping ingestion")
-            return {
-                "status": "already_indexed",
-                "message": "Document already exists in vector database"
-            }
+            logging.info("Document already indexed — skipping chunking")
+
+            return RAGChunkAndSrc(
+                chunks=[],          # IMPORTANT
+                source_id=source_id
+            )
         chunks = load_and_chunk_pdf(pdf_path)
         return RAGChunkAndSrc(chunks=chunks, source_id=source_id)
 
@@ -72,6 +73,13 @@ async def rag_ingest_pdf(ctx: inngest.Context):
         return RAGUpsertResult(ingested=len(chunks))
 
     chunks_and_src = await ctx.step.run("load-and-chunk", lambda: _load(ctx), output_type=RAGChunkAndSrc)
+    #if already indexed ----
+    if not chunks_and_src.chunks:
+        logging.info("No chunks returned — ingestion skipped.")
+        return {
+            "status": "already_indexed",
+            "source_id": source_id
+        }
     ingested = await ctx.step.run("embed-and-upsert", lambda: _upsert(chunks_and_src), output_type=RAGUpsertResult)
     logging.info("Ingestion completed.")
 
