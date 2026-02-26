@@ -101,7 +101,7 @@ Reply ONLY with YES or NO.
 
         self.trace.log("Hybrid Retrieval", stats)
         contexts = self.rerank(question, contexts)
-        
+
         # multi-hop decision
         do_second = await self.needs_second_hop(
             ctx, question, contexts
@@ -118,4 +118,4 @@ Reply ONLY with YES or NO.
             # merge unique contexts
             contexts = list(dict.fromkeys(contexts + more_contexts))[:top_k]
 
-        return contexts, sources
+        return contexts, sources, self.trace.export()
