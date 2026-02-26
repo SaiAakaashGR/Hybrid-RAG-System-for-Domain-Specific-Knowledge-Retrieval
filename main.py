@@ -45,9 +45,19 @@ inngest_client = inngest.Inngest(
     ),
 )
 async def rag_ingest_pdf(ctx: inngest.Context):
+    pdf_path = ctx.event.data["pdf_path"]
+    source_id = ctx.event.data.get("source_id", pdf_path)
+    store = QdrantStorage(source_id)
     def _load(ctx: inngest.Context)->RAGChunkAndSrc:
-        pdf_path = ctx.event.data["pdf_path"]
-        source_id = ctx.event.data.get("source_id", pdf_path)
+
+
+        #skip re-ingestion if already exists
+        if store.collection_exists():
+            logging.info("Document already indexed — skipping ingestion")
+            return {
+                "status": "already_indexed",
+                "message": "Document already exists in vector database"
+            }
         chunks = load_and_chunk_pdf(pdf_path)
         return RAGChunkAndSrc(chunks=chunks, source_id=source_id)
 
@@ -63,6 +73,10 @@ async def rag_ingest_pdf(ctx: inngest.Context):
 
     chunks_and_src = await ctx.step.run("load-and-chunk", lambda: _load(ctx), output_type=RAGChunkAndSrc)
     ingested = await ctx.step.run("embed-and-upsert", lambda: _upsert(chunks_and_src), output_type=RAGUpsertResult)
+    logging.info("Ingestion completed.")
+
+    # ✅ cleanup policy (keep DB small)
+    store.delete_old_collections(keep_last=10)
     return ingested.model_dump()
 
 @inngest_client.create_function(
@@ -135,14 +149,20 @@ async def rag_query_pdf_ai(ctx: inngest.Context):
     question = ctx.event.data["question"]
     top_k = int(ctx.event.data.get("top_k", 5))
 
-    engine = QueryEngine()
+    source_id = ctx.event.data["source_id"]
+    engine = QueryEngine(source_id)
 
-    contexts, sources = await engine.retrieve_contexts(
+    contexts, sources, trace = await engine.retrieve_contexts(
         ctx,
         question,
         top_k
     )
-
+    if not contexts:
+        return {
+            "answer": "No relevant context found.",
+            "sources": [],
+            "trace": trace,
+        }
     logging.info(f"Retrieved {len(contexts)} contexts")
 
     context_block = "\n\n".join(f"- {c}" for c in contexts)

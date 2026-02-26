@@ -57,7 +57,7 @@ st.divider()
 st.title("Ask a question about your PDFs")
 
 
-async def send_rag_query_event(question: str, top_k: int) -> None:
+async def send_rag_query_event(question: str, top_k: int, source_id) -> None:
     client = get_inngest_client()
     result = await client.send(
         inngest.Event(
@@ -65,6 +65,7 @@ async def send_rag_query_event(question: str, top_k: int) -> None:
             data={
                 "question": question,
                 "top_k": top_k,
+                "source_id": source_id, 
             },
         )
     )
@@ -106,12 +107,13 @@ def wait_for_run_output(event_id: str, timeout_s: float = 120.0, poll_interval_s
 with st.form("rag_query_form"):
     question = st.text_input("Your question")
     top_k = st.number_input("How many chunks to retrieve", min_value=1, max_value=20, value=5, step=1)
+    source_id = st.text_input("Document name (same as upload)")
     submitted = st.form_submit_button("Ask")
 
     if submitted and question.strip():
         with st.spinner("Sending event and generating answer..."):
             # Fire-and-forget event to Inngest for observability/workflow
-            event_id = asyncio.run(send_rag_query_event(question.strip(), int(top_k)))
+            event_id = asyncio.run(send_rag_query_event(question.strip(), int(top_k)), source_id)
             # Poll the local Inngest API for the run's output
             output = wait_for_run_output(event_id)
             answer = output.get("answer", "")
@@ -123,3 +125,14 @@ with st.form("rag_query_form"):
             st.caption("Sources")
             for s in sources:
                 st.write(f"- {s}")
+
+        #TRACE VISUALIZATION
+        trace = output.get("trace", [])
+
+        if trace:
+            st.divider()
+            st.subheader("⚙️ RAG Pipeline Execution")
+
+            for step in trace:
+                with st.expander(step["step"]):
+                    st.json(step["data"])

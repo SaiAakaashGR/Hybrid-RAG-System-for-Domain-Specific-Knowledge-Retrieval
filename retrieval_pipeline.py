@@ -9,8 +9,8 @@ logger = logging.getLogger("rag")
 
 class RetrievalPipeline:
 
-    def __init__(self):
-        self.store = QdrantStorage()
+    def __init__(self, source_id: str):
+        self.store = QdrantStorage(source_id)
 
         # ---------- Load reranker ----------
         try:
